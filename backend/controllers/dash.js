@@ -8,7 +8,7 @@ const res = require("express/lib/response");
 const octokit = new Octokit({
   auth: `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`,
 });
-
+const dayjs = require("dayjs");
 const GetMessage = async (req, res) => {
   try {
     const repoMessage = await octokit.request("GET /repos/{owner}/{repo}", {
@@ -385,10 +385,19 @@ const RepoGetLanguage = async (owner, name) => {
   );
   return repoMessage.data;
 };
-
+const TimeSelection = async (req, res) => {
+  try {
+    console.log(dayjs(req.body.startTime).get("year")+dayjs(req.body.startTime).get("date"));
+    console.log(req.body.endTime);
+    res.status(201).json({ status: "success!" });
+  } catch (err) {
+    res.status(404).json(err);
+  }
+};
 module.exports = {
   GetMessage,
   SearchRepoName,
   GetDashboard,
   DeleteRepo,
+  TimeSelection,
 };

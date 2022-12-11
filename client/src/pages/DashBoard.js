@@ -5,8 +5,7 @@ import { useParams } from "react-router-dom";
 import { Box, Grid, Container, Typography } from "@mui/material";
 import {
   CommitNumber,
-  TimeSelection,
-  ReleaseVersion,
+  Time,
   IssueNumber,
   StarNumber,
   ForkNumber,
@@ -63,12 +62,7 @@ export default function DashboardApp() {
               <TimeLine {...timeline} />
             </Grid>
             <Grid item xs={12} sm={6} md={8}>
-              <Grid style={{height:"50%"}}>
-                <TimeSelection/>
-              </Grid>
-              <Grid style={{height:"50%"}}>
-                <ReleaseVersion/>
-              </Grid>
+              <Time/>
             </Grid>
             <Grid item xs={12} sm={6} md={2.4}>
               <CommitNumber />

@@ -1,6 +1,5 @@
 import TimeLine from "./TimeLine";
-import TimeSelection from "./TimeSelection";
-import ReleaseVersion from "./ReleaseVersion";
+import Time from "./Time";
 import CommitNumber from "./CommitNumber";
 import IssueNumber from "./IssueNumber";
 import StarNumber from "./StarNumber";
@@ -16,8 +15,7 @@ import Company from "./Company";
 
 export {
   TimeLine,
-  TimeSelection,
-  ReleaseVersion,
+  Time,
   CommitNumber,
   IssueNumber,
   StarNumber,
