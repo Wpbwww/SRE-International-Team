@@ -6,6 +6,7 @@ const {
   SearchRepoName,
   GetDashboard,
   DeleteRepo,
+  TimeSelection,
 } = require("../controllers/dash");
 const { CheckUser, CreateUser } = require("../controllers/user");
 
@@ -15,5 +16,5 @@ router.route("/register").post(CreateUser);
 router.route("/search").post(SearchRepoName);
 router.route("/dashboard").post(GetDashboard);
 router.route("/delete").post(DeleteRepo);
-
+router.route("/time").post(TimeSelection);
 module.exports = router;

@@ -21,6 +21,9 @@ import {
   HANDLE_CHANGE,
   CLEAR_FILTERS,
   CHANGE_PAGE,
+  TIMESELECTION_BEGIN,
+  TIMESELECTION_SUCCESS,
+  TIMESELECTION_ERROR
 } from "./actions";
 import { initialState } from "./appContext";
 
@@ -167,6 +170,25 @@ const reducer = (state, action) => {
 
   if (action.type === CLEAR_FILTERS) {
     return { ...state, search: "", searchStatus: "all", searchType: "all" };
+  }
+  if (action.type === TIMESELECTION_BEGIN) {
+    return {
+      ...state,
+    };
+  }
+  if (action.type === TIMESELECTION_SUCCESS) {
+    return {
+      ...state,
+    };
+  }
+  if (action.type === TIMESELECTION_ERROR) {
+    return {
+      ...state,
+      isLoading: false,
+      showAlert: true,
+      alertType: "error",
+      alertText: action.payload.msg,
+    };
   }
   throw new Error(`no such action : ${action}`);
 };

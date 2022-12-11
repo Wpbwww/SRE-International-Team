@@ -1,4 +1,5 @@
 import React, { useContext, useReducer } from "react";
+import dayjs from 'dayjs';
 import {
   DISPLAY_ALERT,
   CLEAR_ALERT,
@@ -22,6 +23,9 @@ import {
   CHANGE_PAGE,
   CLEAR_FILTERS,
   TOGGLE_SIDEBAR,
+  TIMESELECTION_BEGIN,
+  TIMESELECTION_SUCCESS,
+  TIMESELECTION_ERROR
 } from "./actions";
 import axios from "axios";
 import reducer from "./reducer";
@@ -208,7 +212,25 @@ const AppProvider = ({ children }) => {
   const clearFilters = () => {
     dispatch({ type: CLEAR_FILTERS });
   };
+  const TimeSelection = async (startTime,endTime) => {
+    dispatch({ type: TIMESELECTION_BEGIN });
+    try {
 
+      await authFetch.post("/time", {
+        startTime,
+        endTime,
+      });
+      dispatch({
+        type: TIMESELECTION_SUCCESS,
+      });
+    } catch (error) {
+      dispatch({
+        type: TIMESELECTION_ERROR,
+        payload: { msg: error.response.data.msg },
+      });
+    }
+    clearAlert();
+  };
   return (
     <AppContext.Provider
       value={{
@@ -225,6 +247,7 @@ const AppProvider = ({ children }) => {
         toggleSidebar,
         changePage,
         clearFilters,
+        TimeSelection,
       }}
     >
       {children}
