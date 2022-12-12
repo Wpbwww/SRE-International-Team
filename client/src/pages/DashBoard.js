@@ -34,6 +34,7 @@ export default function DashboardApp() {
     commit_frequency,
     issue_frequency,
     contributors,
+    versions,
   } = detail;
 
   if (isLoading) {
@@ -62,7 +63,7 @@ export default function DashboardApp() {
               <TimeLine {...timeline} />
             </Grid>
             <Grid item xs={12} sm={6} md={8}>
-              <Time/>
+              <Time releaseDetail={versions}/>
             </Grid>
             <Grid item xs={12} sm={6} md={2.4}>
               <CommitNumber />

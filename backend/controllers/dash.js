@@ -8,18 +8,19 @@ const res = require("express/lib/response");
 const dayjs = require("dayjs");
 const octokit = new Octokit({
   //auth: `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`,
-  auth: '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',
+  auth: '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',
 });
 
 
 const GetMessage = async (req, res) => {
   try {
+    console.log("2");
     //console.log("1" + req.body.owner + req.body.repoName);
     const repoMessage = await octokit.request("GET /repos/{owner}/{repo}", {
       owner: req.body.owner,
       repo: req.body.repoName,
     });
-    //console.log("2");
+    console.log("2");
     const CreateRepo = await RepoSchema.create({
       name: repoMessage.data.name,
       owner: repoMessage.data.owner.login,
@@ -443,7 +444,7 @@ const RepoGetLanguage = async (owner, name) => {
 };
 const TimeSelection = async (req, res) => {
   try {
-    console.log(dayjs(req.body.startTime).get("year")+dayjs(req.body.startTime).get("date"));
+    console.log(req.body.startTime);
     console.log(req.body.endTime);
     res.status(201).json({ status: "success!" });
   } catch (err) {
