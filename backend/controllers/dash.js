@@ -7,20 +7,16 @@ const { Octokit } = require("@octokit/core");
 const res = require("express/lib/response");
 const dayjs = require("dayjs");
 const octokit = new Octokit({
-  //auth: `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`,
   auth: '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',
 });
 
 
 const GetMessage = async (req, res) => {
   try {
-    console.log("2");
-    //console.log("1" + req.body.owner + req.body.repoName);
     const repoMessage = await octokit.request("GET /repos/{owner}/{repo}", {
       owner: req.body.owner,
       repo: req.body.repoName,
     });
-    console.log("2");
     const CreateRepo = await RepoSchema.create({
       name: repoMessage.data.name,
       owner: repoMessage.data.owner.login,
