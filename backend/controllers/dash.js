@@ -5,12 +5,10 @@ const ObjectId = require("mongodb").ObjectId;
 
 const { Octokit } = require("@octokit/core");
 const res = require("express/lib/response");
-const dayjs = require("dayjs");
 const octokit = new Octokit({
-  auth: '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',
+  auth: `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`,
 });
-
-
+const dayjs = require("dayjs");
 const GetMessage = async (req, res) => {
   try {
     const repoMessage = await octokit.request("GET /repos/{owner}/{repo}", {
@@ -49,61 +47,12 @@ const GetMessage = async (req, res) => {
         repoMessage.data.owner.login,
         repoMessage.data.name
       ),
-      versions: await GetReleases(
-        repoMessage.data.owner.login,
-        repoMessage.data.name
-      ),
     });
     res.status(201).json({ status: "success!" });
   } catch (err) {
     res.status(404).json(err);
   }
-
 };
-
-
-const GetReleases = async (owner, name) => {
-  //console.log("aaa");
-  const repoMessage = await octokit.request(
-    "GET /repos/{owner}/{repo}/releases",
-    {
-      owner: owner,
-      repo: name,
-    }
-  );
-  let versionArr = [];
-
-  //console.log("bbb");
-  //console.log(repoMessage.data);
-  for (var release in repoMessage.data){
-      var tag = repoMessage.data[release].tag_name;
-      var name = repoMessage.data[release].name;
-      var start = repoMessage.data[release].published_at;
-      var sDate = dayjs(start);
-      //console.log("aaa");
-      var nextDate;
-      //console.log(release + 1);
-      if(parseInt(release) > 0){
-        nextDate = dayjs(repoMessage.data[parseInt(release) - 1].published_at);
-      }
-      else{
-        nextDate = dayjs(Date());
-      }
-
-      //console.log("ccc");
-      //console.log(test);
-      let rel = {"tag": tag, "name": name, "start": sDate, "end": nextDate};
-
-      //console.log(release);
-      //console.log(tag + " | " + name + " | " + start + " \n");
-      console.log(rel);
-      versionArr.push(rel);
-  }
-  //console.log("ccc");
-  console.log(versionArr);
-  return versionArr;
-};
-
 
 const SearchRepoName = async (req, res) => {
   try {
@@ -195,8 +144,6 @@ const RepoGetCommitFrequency = async (owner, name) => {
   }
   return frequency;
 };
-
-
 
 const CountDayCommit = (Msg) => {
   var order = {};
