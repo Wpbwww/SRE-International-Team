@@ -387,7 +387,7 @@ const RepoGetLanguage = async (owner, name) => {
 };
 const TimeSelection = async (req, res) => {
   try {
-    console.log(dayjs(req.body.startTime).get("year")+dayjs(req.body.startTime).get("date"));
+    console.log(req.body.startTime);
     console.log(req.body.endTime);
     res.status(201).json({ status: "success!" });
   } catch (err) {

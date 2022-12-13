@@ -8,15 +8,29 @@ import {useEffect, useState} from 'react';
 import { Card, Typography,Button, Grid } from "@mui/material";
 
 import { useAppContext } from "../../context/appContext";
-function Time(){
+
+import Box from '@mui/material/Box';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+import { FixedSizeList } from 'react-window';
+import { set } from 'lodash';
+
+const Time=(releaseDetail)=>{
 const [StartTime, setStartTime] = useState(dayjs(Date()).subtract(3,'year'));
 const [EndTime, setEndTime] = useState(dayjs(Date()));
-const [refresh, setrefresh] = useState(false);
+const [submit, setsubmit] = useState(false);
+
+const [name, setname] = useState("1");
+useEffect(
+  ()=>{TimeSelection(StartTime,EndTime)}
+,[submit]
+)
 const {
   TimeSelection
 } = useAppContext();
-const exportTime = () => {
-  TimeSelection(StartTime,EndTime);
+const exportTime = (StartTime,EndTime) => {
+  setsubmit(!submit)
 };
 function TimeSelect(){
   const [IsStartButton, setStartButton] = useState(false);
@@ -74,24 +88,67 @@ function TimeSelect(){
     <>
         {Clicked===false?
         <Grid align="center" style={{justifyContent:'center'}}>
-        <Button onClick={StartButtonClick} id={"starttime"}>{StartTime.get('year')}-{StartTime.get('month')}-{StartTime.get('dates')}</Button>
+        <Button onClick={StartButtonClick} id={"starttime"}>{StartTime.get('year')}-{StartTime.get('month')+1}-{StartTime.get('dates')}</Button>
         <Typography>-</Typography>
-        <Button onClick={EndButtonClick} id={"endtime"}>{EndTime.get('year')}-{EndTime.get('month')}-{EndTime.get('dates')}</Button>
+        <Button onClick={EndButtonClick} id={"endtime"}>{EndTime.get('year')}-{EndTime.get('month')+1}-{EndTime.get('dates')}</Button>
         </Grid>
         :
         <Grid align="center" style={{justifyContent:'center'}}>{IsStartButton===true?<SelectStartTime/>:<SelectEndTime/>}</Grid>}
     </>
   );
 }
-function ReleaseVersion() {
+const ReleaseVersion=()=>{
   const [IsButtonClick, setIsButtonClick] = useState(false);
-  function ButtonClick(){
-    setIsButtonClick(!IsButtonClick);
+  const SwitchTime=(start,end)=>{
+    setStartTime(dayjs(start))
+    setEndTime(dayjs(end))
+    exportTime(StartTime,EndTime);
+  }
+  const VersionPop=(Index)=>{
+    var index=Index["Index"]
+    if(releaseDetail.releaseDetail[index]!==undefined){
+      var version=releaseDetail.releaseDetail
+    return(<Button onClick={()=>{SwitchTime(version[index]['start'],version[index]['end'])}}>{version[index]['tag']}</Button>) }
+    //return(<Button onClick={()=>{SwitchTime(version[index]['start'],version[index]['end'])}}>{version[index]['tag']}|{version[index]['name']}</Button>) }
+    else{
+      return null
+    }
+  }
+  const ReleaseButton = (num)=>{
+    function renderRow(props) {
+      const { index, style } = props;
+      return (
+        <ListItem style={style} key={index}>
+            <VersionPop Index={index}/>
+          
+        </ListItem>
+      );
+    }
+    return (
+        <Box
+        >
+          {IsButtonClick===false?<Button onClick={()=>{setIsButtonClick(true)}}>show release</Button>:
+          <>
+          <Button onClick={()=>{setIsButtonClick(false)}}>close</Button>
+          <FixedSizeList
+            height={400}
+            width={600}
+            itemSize={50}
+            itemCount={releaseDetail.releaseDetail.length}
+            overscanCount={5}
+          >
+            {renderRow}
+          </FixedSizeList>
+          </>
+          }
+          
+        </Box>
+      );
   }
   return (
-    <Card style={{height:"100%"}}>
-      <Typography>{IsButtonClick}</Typography>
-      <Typography>{IsButtonClick===false?<Button onClick={ButtonClick}>Release Version</Button>:'ReleaseSelect'}</Typography>
+    <Card>
+      <ReleaseButton/>
+
     </Card>
   );
 }
@@ -99,7 +156,7 @@ function ReleaseVersion() {
     <Card style={{height:"100%",width:"100%"}}>
       <TimeSelect/>
       <Card style={{height:"100%",width:"100%"}}>
-        <ReleaseVersion/>
+        <ReleaseVersion releaseDetail={releaseDetail}/>
       </Card>
     </Card>
   );
