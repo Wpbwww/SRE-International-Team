@@ -35,6 +35,7 @@ const user = localStorage.getItem("name");
 export const initialState = {
   isLoading: false,
   showAlert: false,
+  refresh: false,
   user: user ? JSON.parse(user) : null,
   alertText: "",
   alertType: "",
@@ -212,13 +213,16 @@ const AppProvider = ({ children }) => {
   const clearFilters = () => {
     dispatch({ type: CLEAR_FILTERS });
   };
-  const TimeSelection = async (startTime,endTime) => {
+  const TimeSelection = async (repoInfo,startTime,endTime) => {
     dispatch({ type: TIMESELECTION_BEGIN });
     try {
-
+      const {owner,name,uploader}=repoInfo
       await authFetch.post("/time", {
-        startTime,
-        endTime,
+        owner:owner,
+        repoName:name,
+        uploader:uploader,
+        startTime:startTime,
+        endTime:endTime,
       });
       dispatch({
         type: TIMESELECTION_SUCCESS,
@@ -231,6 +235,7 @@ const AppProvider = ({ children }) => {
     }
     clearAlert();
   };
+
   return (
     <AppContext.Provider
       value={{

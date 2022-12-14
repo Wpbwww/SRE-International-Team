@@ -20,12 +20,15 @@ import {
   Company,
 } from "../components/DashBoard";
 export default function DashboardApp() {
-  useEffect(() => {
-    getDashBoard(id);
-  }, []);
   const { id } = useParams();
-  const { isLoading, detail, getDashBoard } = useAppContext();
+  const { isLoading, detail, getDashBoard ,refresh} = useAppContext();
+  useEffect(() => {
+    if(!refresh)getDashBoard(id);
+  }, [refresh]);
   const {
+    name,
+    owner,
+    uploader,
     forks,
     stars,
     open_issues,
@@ -35,8 +38,9 @@ export default function DashboardApp() {
     issue_frequency,
     contributors,
     versions,
+    time
   } = detail;
-
+  const repoInfo={name,owner,uploader}
   if (isLoading) {
     return <Loading center />;
   } else {
@@ -63,7 +67,7 @@ export default function DashboardApp() {
               <TimeLine {...timeline} />
             </Grid>
             <Grid item xs={12} sm={6} md={8}>
-              <Time releaseDetail={versions}/>
+              <Time msg={{repoInfo,versions,time}} />
             </Grid>
             <Grid item xs={12} sm={6} md={2.4}>
               <CommitNumber />
