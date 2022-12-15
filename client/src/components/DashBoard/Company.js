@@ -1,12 +1,12 @@
 import { merge } from "lodash";
 import ReactApexChart from "react-apexcharts";
 import { useTheme, styled } from "@mui/material/styles";
-import { Card, CardHeader ,Grid,Typography } from "@mui/material";
+import { Box,Button, Card, CardHeader ,Grid,Typography } from "@mui/material";
 import { fNumber } from "../../utils/formatNumber";
 import BaseOptionChart from "./BaseOptionChart";
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-
+import ListItem from '@mui/material/ListItem';
+import { FixedSizeList } from 'react-window';
+import { useState,useEffect } from "react";
 const CHART_HEIGHT = 372;
 const LEGEND_HEIGHT = 72;
 
@@ -26,6 +26,21 @@ const ChartWrapperStyle = styled("div")(({ theme }) => ({
 
 
 const Company = (data) => {
+  const [companyMsg,setCompanyMsg]=useState([])
+  const [isLoading,setIsLoading]=useState(true)
+  const [companyId,setCompanyId]=useState(0)
+  const [employeeMsg,setEmployeeMsg]=useState([])
+  useEffect(()=>{
+    if(data){
+      setIsLoading(false)
+      setCompanyMsg(Object.values(data))
+    };
+  },[data])
+  useEffect(()=>{
+    if(companyMsg.length!==0){
+      setEmployeeMsg(Object.values(companyMsg[companyId].employees))
+    };
+  },[companyMsg,companyId])
   const theme = useTheme();
   var labels = [];
   var size = [];
@@ -73,10 +88,72 @@ const Company = (data) => {
       pie: { donut: { labels: { show: false } } },
     },
   });
-
+  const CompanyList = ()=>{
+    function renderRow(props) {
+      const { index, style } = props;
+      return (
+        <ListItem style={style} key={index}>
+          <Box align={"center"} style={{width:"80%"}}>
+            <Button onClick={()=>{setCompanyId(index)}}>{companyMsg[index].name}</Button>
+          </Box>
+          <Box align={"right"} style={{width:"20%"}}>{companyMsg[index].count}</Box>
+        </ListItem>
+      );
+    }
+    return (
+      <>
+      {isLoading===false?
+      <FixedSizeList
+        height={400}
+        width={380}
+        itemSize={50}
+        itemCount={companyMsg.length}
+        overscanCount={20}
+      >
+        {renderRow}
+      </FixedSizeList>
+      :""
+      }</>
+    )
+  }
+  const CompanyMsgList = ()=>{
+    function renderRow(props) {
+      const { index, style } = props;
+      return (
+        <ListItem style={style} key={index}>
+          <Box align={"left"} style={{width:"20%"}}>
+          <Box
+           component="img"
+            alt={employeeMsg[index].name}
+            src={employeeMsg[index].avatar_url}
+            sx={{ width: 48, height: 48, borderRadius: 1.5 }}
+            lign={"center"}
+          />
+          </Box>
+          <Box align={"left"} style={{width:"60%"}}>{employeeMsg[index].name}</Box>
+          <Box align={"right"} style={{width:"20%"}}>{employeeMsg[index].contributions}</Box>
+        </ListItem>
+      );
+    }
+    return (
+      <>
+      {isLoading===false?
+      <FixedSizeList
+        height={400}
+        width={380}
+        itemSize={50}
+        itemCount={employeeMsg.length}
+        overscanCount={20}
+      >
+        {renderRow}
+      </FixedSizeList>
+      :""
+      }</>
+    )
+  }
   return (
     <Grid container spacing={0}>
-    <Card style={{width: '50%' }}>
+    <Card style={{width: '100%' }}>
       <CardHeader title="Company" />
       <ChartWrapperStyle>
         <ReactApexChart
@@ -87,29 +164,14 @@ const Company = (data) => {
         />
       </ChartWrapperStyle>
     </Card>
-
-    <Card style={{width: '25%' }}>
+    <Card style={{width: '50%' }}>
     <CardHeader title="Company" />
-    <Tabs
-      value={names}
-      //onChange={handleChange}
-      variant="scrollable"
-      scrollButtons={false}
-      aria-label="scrollable prevent tabs example"
-      >
-      <Tab label={names[1]} />
-      <Tab label="Item Two" />
-      <Tab label="Item Three" />
-      <Tab label="Item Four" />
-      <Tab label="Item Five" />
-      <Tab label="Item Six" />
-      <Tab label="Item Seven" />
-      </Tabs>
+      <CompanyList/>
     </Card>
 
-    <Card style={{width: '25%' }}>
+    <Card style={{width: '50%' }}>
     <CardHeader title="Companymsg" />
-      <Typography>companymsg</Typography>
+      <CompanyMsgList/>
     </Card>
     </Grid>
   );

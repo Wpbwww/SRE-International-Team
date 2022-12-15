@@ -8,10 +8,7 @@ const { Octokit } = require("@octokit/core");
 
 const res = require("express/lib/response");
 const octokit = new Octokit({
-  auth: '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',
-  //auth: `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`,
-  //auth: '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',
-
+  auth: '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',
 });
 const dayjs = require("dayjs");
 const GetMessage = async (req, res) => {
