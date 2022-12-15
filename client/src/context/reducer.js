@@ -172,20 +172,26 @@ const reducer = (state, action) => {
     return { ...state, search: "", searchStatus: "all", searchType: "all" };
   }
   if (action.type === TIMESELECTION_BEGIN) {
-    return {
-      ...state,
+    return { 
+      ...state, 
+      isLoading: true ,
+      refresh: true,
     };
   }
   if (action.type === TIMESELECTION_SUCCESS) {
     return {
       ...state,
+      showAlert: true,
+      refresh: false,
+      alertType: "success",
+      alertText: "Time Selection successfully!",
     };
   }
   if (action.type === TIMESELECTION_ERROR) {
     return {
       ...state,
-      isLoading: false,
       showAlert: true,
+      refresh: false,
       alertType: "error",
       alertText: action.payload.msg,
     };

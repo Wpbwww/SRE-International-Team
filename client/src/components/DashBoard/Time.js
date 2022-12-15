@@ -16,20 +16,33 @@ import ListItemText from '@mui/material/ListItemText';
 import { FixedSizeList } from 'react-window';
 import { set } from 'lodash';
 
-const Time=(releaseDetail)=>{
+const Time=(msg)=>{
 const [StartTime, setStartTime] = useState(dayjs(Date()).subtract(3,'year'));
 const [EndTime, setEndTime] = useState(dayjs(Date()));
 const [submit, setsubmit] = useState(false);
-
-const [name, setname] = useState("1");
 useEffect(
-  ()=>{TimeSelection(StartTime,EndTime)}
+  ()=>{
+    if(submit===true){
+      TimeSelection(msg.msg.repoInfo,StartTime,EndTime)
+      setsubmit(false)
+    }
+  }
 ,[submit]
+)
+useEffect(
+  ()=>{
+    if(msg.msg.time){
+      setStartTime(dayjs(msg.msg.time.startTime))
+      setEndTime(dayjs(msg.msg.time.endTime))
+    }
+  }
+,[msg.msg.time]
 )
 const {
   TimeSelection
 } = useAppContext();
 const exportTime = (StartTime,EndTime) => {
+  
   setsubmit(!submit)
 };
 function TimeSelect(){
@@ -106,15 +119,15 @@ const ReleaseVersion=()=>{
   }
   const VersionPop=(Index)=>{
     var index=Index["Index"]
-    if(releaseDetail.releaseDetail[index]!==undefined){
-      var version=releaseDetail.releaseDetail
+    if(msg.msg.versions[index]!==undefined){
+      var version=msg.msg.versions
     return(<Button onClick={()=>{SwitchTime(version[index]['start'],version[index]['end'])}}>{version[index]['tag']}</Button>) }
     //return(<Button onClick={()=>{SwitchTime(version[index]['start'],version[index]['end'])}}>{version[index]['tag']}|{version[index]['name']}</Button>) }
     else{
       return null
     }
   }
-  const ReleaseButton = (num)=>{
+  const ReleaseButton = ()=>{
     function renderRow(props) {
       const { index, style } = props;
       return (
@@ -125,8 +138,7 @@ const ReleaseVersion=()=>{
       );
     }
     return (
-        <Box
-        >
+        <Box>
           {IsButtonClick===false?<Button onClick={()=>{setIsButtonClick(true)}}>show release</Button>:
           <>
           <Button onClick={()=>{setIsButtonClick(false)}}>close</Button>
@@ -134,7 +146,7 @@ const ReleaseVersion=()=>{
             height={400}
             width={600}
             itemSize={50}
-            itemCount={releaseDetail.releaseDetail.length}
+            itemCount={msg.msg.versions.length}
             overscanCount={5}
           >
             {renderRow}
@@ -156,7 +168,7 @@ const ReleaseVersion=()=>{
     <Card style={{height:"100%",width:"100%"}}>
       <TimeSelect/>
       <Card style={{height:"100%",width:"100%"}}>
-        <ReleaseVersion releaseDetail={releaseDetail}/>
+        <ReleaseVersion/>
       </Card>
     </Card>
   );

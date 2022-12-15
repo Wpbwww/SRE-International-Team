@@ -42,6 +42,12 @@ const Repo = new mongoose.Schema({
     },
     language:{
         type:Object
+    },
+    versions:{
+        type:[Object]
+    },
+    time:{
+        type:Object
     }
 })
 
