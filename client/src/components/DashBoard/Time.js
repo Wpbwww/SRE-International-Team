@@ -16,36 +16,63 @@ import ListItemText from '@mui/material/ListItemText';
 import { FixedSizeList } from 'react-window';
 import { set } from 'lodash';
 
-const Time=(releaseDetail)=>{
+const Time=(msg)=>{
 const [StartTime, setStartTime] = useState(dayjs(Date()).subtract(3,'year'));
 const [EndTime, setEndTime] = useState(dayjs(Date()));
 const [submit, setsubmit] = useState(false);
-
-const [name, setname] = useState("1");
+const [releaseButtonClick, setIsReleaseButtonClick] = useState(false);
+const [Clicked, setClick] = useState(false);
+const [howSelectTime, sethowSelectTime] = useState("");
 useEffect(
-  ()=>{TimeSelection(StartTime,EndTime)}
+  ()=>{
+    if(howSelectTime==="chooseTime"){
+      setIsReleaseButtonClick(false)
+    }else if(howSelectTime==="chooseVersion"){
+      setClick(false)
+    }
+  }
+,[howSelectTime]
+)
+useEffect(
+  ()=>{
+    if(submit===true){
+      console.log(StartTime,EndTime)
+      TimeSelection(msg.msg.repoInfo,StartTime,EndTime)
+      setsubmit(false)
+    }
+  }
 ,[submit]
+)
+useEffect(
+  ()=>{
+    if(msg.msg.time){
+      setStartTime(dayjs(msg.msg.time.startTime))
+      setEndTime(dayjs(msg.msg.time.endTime))
+    }
+  }
+,[msg.msg.time]
 )
 const {
   TimeSelection
 } = useAppContext();
-const exportTime = (StartTime,EndTime) => {
+const exportTime = () => {
+  
   setsubmit(!submit)
 };
 function TimeSelect(){
-  const [IsStartButton, setStartButton] = useState(false);
-  const [Clicked, setClick] = useState(false);
-  const StartButtonClick=(event)=>{
-    setStartButton(true);
+  const [IsTimeButton, setTimeButton] = useState(false);
+  const TimeButtonClick=(event)=>{
+    sethowSelectTime("chooseTime")
+    setTimeButton(true);
     setClick(true);
   }
   const EndButtonClick=(event)=>{
-    setStartButton(false);
+    sethowSelectTime("chooseTime")
+    setTimeButton(false);
     setClick(true);
   }
   const handleClose=()=>{
     setClick(false);
-    exportTime();
   }
   const SelectStartTime=()=>{
 
@@ -88,33 +115,32 @@ function TimeSelect(){
     <>
         {Clicked===false?
         <Grid align="center" style={{justifyContent:'center'}}>
-        <Button onClick={StartButtonClick} id={"starttime"}>{StartTime.get('year')}-{StartTime.get('month')+1}-{StartTime.get('dates')}</Button>
+        <Button onClick={TimeButtonClick} id={"starttime"}>{StartTime.get('year')}-{StartTime.get('month')+1}-{StartTime.get('dates')}</Button>
         <Typography>-</Typography>
         <Button onClick={EndButtonClick} id={"endtime"}>{EndTime.get('year')}-{EndTime.get('month')+1}-{EndTime.get('dates')}</Button>
+        <Typography/>
+        <Button  onClick={exportTime} id={"submit"} variant={"contained"}>submit</Button>
         </Grid>
         :
-        <Grid align="center" style={{justifyContent:'center'}}>{IsStartButton===true?<SelectStartTime/>:<SelectEndTime/>}</Grid>}
+        <Grid align="center" style={{justifyContent:'center'}}>{IsTimeButton===true?<SelectStartTime/>:<SelectEndTime/>}</Grid>}
     </>
   );
 }
 const ReleaseVersion=()=>{
-  const [IsButtonClick, setIsButtonClick] = useState(false);
   const SwitchTime=(start,end)=>{
     setStartTime(dayjs(start))
     setEndTime(dayjs(end))
-    exportTime(StartTime,EndTime);
   }
   const VersionPop=(Index)=>{
     var index=Index["Index"]
-    if(releaseDetail.releaseDetail[index]!==undefined){
-      var version=releaseDetail.releaseDetail
+    if(msg.msg.versions[index]!==undefined){
+      var version=msg.msg.versions
     return(<Button onClick={()=>{SwitchTime(version[index]['start'],version[index]['end'])}}>{version[index]['tag']}</Button>) }
-    //return(<Button onClick={()=>{SwitchTime(version[index]['start'],version[index]['end'])}}>{version[index]['tag']}|{version[index]['name']}</Button>) }
     else{
       return null
     }
   }
-  const ReleaseButton = (num)=>{
+  const ReleaseButton = ()=>{
     function renderRow(props) {
       const { index, style } = props;
       return (
@@ -125,16 +151,15 @@ const ReleaseVersion=()=>{
       );
     }
     return (
-        <Box
-        >
-          {IsButtonClick===false?<Button onClick={()=>{setIsButtonClick(true)}}>show release</Button>:
+        <Box>
+          {releaseButtonClick===false?<Button onClick={()=>{setIsReleaseButtonClick(true);sethowSelectTime("chooseVersion")}}>show release</Button>:
           <>
-          <Button onClick={()=>{setIsButtonClick(false)}}>close</Button>
+          <Button onClick={()=>{setIsReleaseButtonClick(false)}}>close</Button>
           <FixedSizeList
-            height={400}
-            width={600}
+            height={250}
+            width={500}
             itemSize={50}
-            itemCount={releaseDetail.releaseDetail.length}
+            itemCount={msg.msg.versions.length}
             overscanCount={5}
           >
             {renderRow}
@@ -146,17 +171,14 @@ const ReleaseVersion=()=>{
       );
   }
   return (
-    <Card>
-      <ReleaseButton/>
-
-    </Card>
+    <ReleaseButton/>
   );
 }
   return (
     <Card style={{height:"100%",width:"100%"}}>
       <TimeSelect/>
       <Card style={{height:"100%",width:"100%"}}>
-        <ReleaseVersion releaseDetail={releaseDetail}/>
+        <ReleaseVersion/>
       </Card>
     </Card>
   );
