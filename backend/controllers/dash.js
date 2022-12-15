@@ -6,7 +6,7 @@ const ObjectId = require("mongodb").ObjectId;
 const { Octokit } = require("@octokit/core");
 const res = require("express/lib/response");
 const octokit = new Octokit({
-  auth: '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',
+  auth: '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',
 });
 const dayjs = require("dayjs");
 const GetMessage = async (req, res) => {
@@ -15,6 +15,7 @@ const GetMessage = async (req, res) => {
       owner: req.body.owner,
       repo: req.body.repoName,
     });
+    console.log("auth token available")
     const CreateRepo = await RepoSchema.create({
       name: repoMessage.data.name,
       owner: repoMessage.data.owner.login,
@@ -91,7 +92,6 @@ const SearchRepoName = async (req, res) => {
 
 
 const GetReleases = async (owner, name) => {
-  console.log("aaa");
   const repoMessage = await octokit.request(
     "GET /repos/{owner}/{repo}/releases",
     {
@@ -101,16 +101,12 @@ const GetReleases = async (owner, name) => {
   );
   let versionArr = [];
 
-  //console.log("bbb");
-  //console.log(repoMessage.data);
   for (var release in repoMessage.data){
       var tag = repoMessage.data[release].tag_name;
       var name = repoMessage.data[release].name;
       var start = repoMessage.data[release].published_at;
       var sDate = dayjs(start);
-      //console.log("aaa");
       var nextDate;
-      //console.log(release + 1);
       if(parseInt(release) > 0){
         nextDate = dayjs(repoMessage.data[parseInt(release) - 1].published_at);
       }
@@ -118,18 +114,10 @@ const GetReleases = async (owner, name) => {
         nextDate = dayjs(Date());
       }
 
-      //console.log("ccc");
-      //console.log(test);
       let rel = {"tag": tag, "name": name, "start": sDate, "end": nextDate};
-
-      //console.log(release);
-      //console.log(tag + " | " + name + " | " + start + " \n");
-      console.log(rel);
       versionArr.push(rel);
   }
-  //console.log("ccc");
-  //console.log(versionArr);
-  //return versionArr;
+  return versionArr;
 };
 
 const GetDashboard = async (req, res) => {
@@ -485,8 +473,8 @@ const TimeSelection = async (req, res) => {
       owner: req.body.owner,
       repo: req.body.repoName,
     });
+    console.log("auth token available")
     const where_Str = {_id: req.body.id}
-    console.log(req.body)
     const startTime=dayjs(req.body.startTime)
     const endTime=dayjs(req.body.endTime)
     const Update_Str = {
