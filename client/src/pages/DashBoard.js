@@ -28,7 +28,6 @@ export default function DashboardApp() {
   const {
     name,
     owner,
-    uploader,
     forks,
     stars,
     open_issues,
@@ -40,7 +39,7 @@ export default function DashboardApp() {
     versions,
     time
   } = detail;
-  const repoInfo={name,owner,uploader}
+  const repoInfo={id,name,owner}
   if (isLoading) {
     return <Loading center />;
   } else {
