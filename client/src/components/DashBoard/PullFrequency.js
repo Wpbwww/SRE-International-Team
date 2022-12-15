@@ -8,7 +8,7 @@ import BaseOptionChart from "./BaseOptionChart";
 
 // ----------------------------------------------------------------------
 
-const CommitFrequency = (data) => {
+const PullFrequency = (data) => {
   var labels = [],
     number = [];
   for (var interval in data) {
@@ -45,7 +45,7 @@ const CommitFrequency = (data) => {
   return (
     <Grid container spacing={0}>
     <Card style={{width:'100%'}}>
-      <CardHeader title="Commit times" />
+      <CardHeader title="Pull Frequency" />
       <Box sx={{ p: 3, pb: 1 }} dir="ltr">
         <ReactApexChart
           type="line"
@@ -60,4 +60,4 @@ const CommitFrequency = (data) => {
   );
 };
 
-export default CommitFrequency;
+export default PullFrequency;

@@ -33,6 +33,10 @@ const Repo = new mongoose.Schema({
         type:Object,
         required: [true, 'must provide issue_frequency']
     },
+    pull_frequency:{
+        type:Object,
+        required: [true, 'must provide pull_frequency']
+    },
     contributors:{
         type:[Object],
         required: [true, 'must provide contributors'],
