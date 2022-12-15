@@ -16,6 +16,7 @@ import {
   Contribute,
   CommitFrequency,
   IssueFrequency,
+  PullFrequency,
   ContributorList,
   Company,
 } from "../components/DashBoard";
@@ -35,6 +36,7 @@ export default function DashboardApp() {
     language,
     commit_frequency,
     issue_frequency,
+    pull_frequency,
     contributors,
     versions,
     company,
@@ -95,6 +97,9 @@ export default function DashboardApp() {
             </Grid>
             <Grid item xs={12} sm={6} md={12}>
               <IssueFrequency {...issue_frequency} />
+            </Grid>
+            <Grid item xs={12} sm={6} md={12}>
+              <PullFrequency {...pull_frequency} />
             </Grid>
             <Grid item xs={12} sm={6} md={12}>
               <Contribute {...contribute} />

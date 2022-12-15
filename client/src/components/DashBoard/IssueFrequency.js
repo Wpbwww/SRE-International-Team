@@ -44,7 +44,7 @@ const IssueFrequency = (data) => {
 
   return (
     <Grid container spacing={0}>
-    <Card style={{width:'50%'}}>
+    <Card style={{width:'100%'}}>
       <CardHeader title="Issue Frequency" />
       <Box sx={{ p: 3, pb: 1 }} dir="ltr">
         <ReactApexChart
@@ -54,9 +54,6 @@ const IssueFrequency = (data) => {
           height={364}
         />
       </Box>
-    </Card>
-    <Card style={{width:'50%'}}>
-      <CardHeader title="extend" />
     </Card>
     </Grid>
   );

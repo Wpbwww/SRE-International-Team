@@ -11,6 +11,7 @@ import Contribute from "./Contribution";
 import CommitFrequency from "./CommitFrequency";
 import IssueFrequency from "./IssueFrequency";
 import ContributorList from "./ContributorList";
+import PullFrequency from "./PullFrequency";
 import Company from "./Company";
 
 export {
@@ -26,6 +27,7 @@ export {
   Contribute,
   CommitFrequency,
   IssueFrequency,
+  PullFrequency,
   ContributorList,
   Company,
 };

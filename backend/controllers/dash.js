@@ -9,10 +9,10 @@ const { Octokit } = require("@octokit/core");
 const res = require("express/lib/response");
 const octokit = new Octokit({
   auth: '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',
-
 });
 const dayjs = require("dayjs");
 const GetMessage = async (req, res) => {
+  console.log("wow");
   try {
     const repoMessage = await octokit.request("GET /repos/{owner}/{repo}", {
       owner: req.body.owner,
@@ -32,6 +32,11 @@ const GetMessage = async (req, res) => {
         repoMessage.data.name
       ),
       issue_frequency: await RepoGetIssueFrequency(
+        {startTime: dayjs(Date()).subtract(1,'month'),endTime: dayjs(Date())},
+        repoMessage.data.owner.login,
+        repoMessage.data.name
+      ),
+      pull_frequency: await RepoGetPullFrequency(
         {startTime: dayjs(Date()).subtract(1,'month'),endTime: dayjs(Date())},
         repoMessage.data.owner.login,
         repoMessage.data.name
@@ -215,6 +220,102 @@ const DeleteRepo = async (req, res) => {
     res.status(404).json(err);
   }
 };
+
+const CountDayPull = (Msg) => {
+  var order = {};
+  var result = {};
+
+  for (var i in Msg.data) {
+    var t = Msg.data[i].updated_at.substring(0, 10);
+    formalLength = Object.keys(order).length;
+    if (!(t in result)) {
+      order[formalLength.toString()] = t;
+      result[t] = 1;
+    } else {
+      result[t] += 1;
+    }
+  }
+  var pra = Math.floor((Object.keys(order).length - 1) / 6) + 1;
+  var answer = {};
+  var a = Math.floor(Object.keys(order).length / pra);
+  if (pra == 1) {
+    for (var i = 0; i < a; i++) {
+      answer[order[i.toString()]] = result[order[i.toString()]];
+    }
+    return answer;
+  }
+  for (var i = 0; i < a; i++) {
+    pp = order[i * pra];
+    var sum = 0;
+    for (var j = i * pra; j <= i * pra + pra - 1; j++) {
+      sum += result[order[j.toString()]];
+    }
+    answer[pp] = sum;
+  }
+  return answer;
+};
+
+const RepoGetPullFrequency = async (time, owner, name) => {
+  const {startTime, endTime} = time;
+  console.log("----");
+  console.log(time);
+  const repoMessage = await octokit.request(
+    "GET /repos/{owner}/{repo}/pulls",
+    {
+      owner: owner,
+      repo: name,
+      per_page: 100,
+      page: 1,
+      since: startTime.toDate(),
+      until: endTime.toDate()
+    }
+  );
+
+  if (repoMessage.data.length == 0) return { 2021: "0", 2020: "0", 2019: "0" };
+  var i =2
+  console.log("start of info loop");
+  while(true){
+    const NextRepoMessage = await octokit.request(
+      "GET /repos/{owner}/{repo}/pulls",
+      {
+        owner: owner,
+        repo: name,
+        per_page: 100,
+        page: i,
+        since: startTime.toDate(),
+        until: endTime.toDate()
+      }
+    );
+    i++;
+    if (NextRepoMessage.data.length == 0) break;
+    else {
+      console.log(NextRepoMessage.data[0].updated_at);
+      if (dayjs(NextRepoMessage.data[0].updated_at).isAfter(endTime)||NextRepoMessage.data.length<100){
+        repoMessage.data = repoMessage.data.concat(NextRepoMessage.data);
+        break;
+      }
+      repoMessage.data = repoMessage.data.concat(NextRepoMessage.data);
+    }
+  }
+  console.log("end of info loop");
+  const x1 = repoMessage.data[0].updated_at;
+  const x2 =
+    repoMessage.data[repoMessage.data.length - 1].updated_at;
+  const t1 = TransDate(x1);
+  const t2 = TransDate(x2);
+  var frequency = {};
+  if (t1 - t2 < 2) {
+    frequency = CountDayPull(repoMessage);
+  } else if (t1 - t2 > 15) {
+    year1 = Math.floor(t1 / 12);
+    year2 = Math.floor(t2 / 12);
+    frequency = CountYearPull(year1, year2, repoMessage.data);
+  } else {
+    frequency = CountMonthPull(t1, t2, repoMessage.data);
+  }
+  return frequency;
+
+}
 
 const RepoGetCommitFrequency = async (time,owner, name) => {
   const {startTime,endTime}=time
@@ -441,6 +542,22 @@ const CountYearCommit = (year1, year2, commitmsg) => {
   return obj;
 };
 
+const CountYearPull = (year1, year2, commitmsg) => {
+  var countNum = new Array(year1 - year2 + 1).fill(0);
+  commitmsg.map((x) => {
+    year0 = Math.floor(TransDate(x.updated_at) / 12);
+    countNum[year1 - year0] += 1;
+  });
+
+  var obj = {};
+  for (var i = year1; i >= year2; i--) {
+    nn = i + 2000;
+    cc = nn + "";
+    obj[cc] = countNum[year1 - i];
+  }
+  return obj;
+};
+
 const CountYearIssue = (year1, year2, commitmsg) => {
   var countNum = new Array(year1 - year2 + 1).fill(0);
   commitmsg.map((x) => {
@@ -460,6 +577,23 @@ const CountMonthCommit = (t1, t2, commitmsg) => {
   var countNum = new Array(t1 - t2 + 1).fill(0);
   commitmsg.map((x) => {
     t = TransDate(x.commit.committer.date);
+    countNum[t1 - t] += 1;
+  });
+
+  var obj = {};
+  for (var i = t1; i >= t2; i--) {
+    mm = (i % 12) + 1;
+    nn = (i - mm + 1) / 12 + 2000;
+    cc = mm > 9 ? nn + "-" + mm : nn + "-0" + mm;
+    obj[cc] = countNum[t1 - i];
+  }
+  return obj;
+};
+
+const CountMonthPull = (t1, t2, commitmsg) => {
+  var countNum = new Array(t1 - t2 + 1).fill(0);
+  commitmsg.map((x) => {
+    t = TransDate(x.updated_at);
     countNum[t1 - t] += 1;
   });
 
@@ -572,6 +706,11 @@ const TimeSelection = async (req, res) => {
         repoMessage.data.owner.login,
         repoMessage.data.name
       ),
+      pull_frequency: await RepoGetPullFrequency(
+        {startTime,endTime},
+        repoMessage.data.owner.login,
+        repoMessage.data.name
+      ),
       contributors: await RepoGetContributors(
         repoMessage.data.owner.login,
         repoMessage.data.name
@@ -589,6 +728,7 @@ const TimeSelection = async (req, res) => {
         repoMessage.data.owner.login,
         repoMessage.data.name
       ),
+      company: await RepoGetOrg(repoMessage.data.owner.login, repoMessage.data.name),
       versions: await GetReleases(
         repoMessage.data.owner.login,
         repoMessage.data.name
