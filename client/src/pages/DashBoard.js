@@ -35,6 +35,7 @@ export default function DashboardApp() {
     issue_frequency,
     contributors,
     versions,
+    company,
   } = detail;
 
   if (isLoading) {
@@ -101,7 +102,7 @@ export default function DashboardApp() {
               </Grid>
             )}
             <Grid item xs={12} sm={6} md={12}>
-              <Company/>
+              <Company {...company} />
             </Grid>
           </Grid>
         </Box>

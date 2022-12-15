@@ -4,6 +4,8 @@ import { useTheme, styled } from "@mui/material/styles";
 import { Card, CardHeader ,Grid,Typography } from "@mui/material";
 import { fNumber } from "../../utils/formatNumber";
 import BaseOptionChart from "./BaseOptionChart";
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 
 const CHART_HEIGHT = 372;
 const LEGEND_HEIGHT = 72;
@@ -22,29 +24,37 @@ const ChartWrapperStyle = styled("div")(({ theme }) => ({
   },
 }));
 
+
 const Company = (data) => {
   const theme = useTheme();
   var labels = [];
   var size = [];
+  var names = [];
+  var employees = [];
+
   var count = 0,
     sum = 0;
-  for (var language in data) {
-    if (count < 3) {
-      labels.push(language);
-      size.push(data[language]);
+  for (var company in data) {
+    if (count < 6) {
+      labels.push(data[company].name);
+      size.push(data[company].count);
     } else {
-      sum += data[language];
+      sum += data[company].count;
     }
     count += 1;
+    names.push(data[company].name);
   }
   labels.push("other");
   size.push(sum);
   const chartOptions = merge(BaseOptionChart(), {
     colors: [
-      theme.palette.primary.main,
-      theme.palette.info.main,
-      theme.palette.warning.main,
-      theme.palette.error.main,
+      "#ffc400",
+      "#ffff00",
+      "#ff7800",
+      "#ff0050",
+      "#ff008b",
+      "#df00cb",
+      "#0000ff"
     ],
     labels: labels,
     stroke: { colors: [theme.palette.background.paper] },
@@ -80,7 +90,21 @@ const Company = (data) => {
 
     <Card style={{width: '25%' }}>
     <CardHeader title="Company" />
-      <Typography>company1</Typography>
+    <Tabs
+      value={names}
+      //onChange={handleChange}
+      variant="scrollable"
+      scrollButtons={false}
+      aria-label="scrollable prevent tabs example"
+      >
+      <Tab label={names[1]} />
+      <Tab label="Item Two" />
+      <Tab label="Item Three" />
+      <Tab label="Item Four" />
+      <Tab label="Item Five" />
+      <Tab label="Item Six" />
+      <Tab label="Item Seven" />
+      </Tabs>
     </Card>
 
     <Card style={{width: '25%' }}>

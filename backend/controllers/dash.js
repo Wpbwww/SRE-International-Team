@@ -4,9 +4,12 @@ const RepoSchema = require("../models/repo");
 const ObjectId = require("mongodb").ObjectId;
 
 const { Octokit } = require("@octokit/core");
+//const { OctokitRest } = require("@octokit/rest");
+
 const res = require("express/lib/response");
 const octokit = new Octokit({
-  auth: `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`,
+  //auth: `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`,
+  auth: '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',
 });
 const dayjs = require("dayjs");
 const GetMessage = async (req, res) => {
@@ -47,12 +50,84 @@ const GetMessage = async (req, res) => {
         repoMessage.data.owner.login,
         repoMessage.data.name
       ),
+      company: await RepoGetOrg(repoMessage.data.owner.login, repoMessage.data.name)
     });
     res.status(201).json({ status: "success!" });
   } catch (err) {
     res.status(404).json(err);
   }
 };
+
+
+function compareCompanies( a, b ) {
+  if ( a.count < b.count ){
+    return -1;
+  }
+  if ( a.count > b.count ){
+    return 1;
+  }
+  return 0;
+}
+
+const RepoGetOrg = async(owner, name) => {
+  const repoMessage = await octokit.request(
+    "GET /repos/{owner}/{repo}/contributors",
+    {
+      owner: owner,
+      repo: name,
+      per_page: 100,
+    }
+  );
+
+
+  var result = [];
+  let resMap = new Map();
+
+  for (
+    var i = 0;
+    i < (repoMessage.data.length < 100 ? repoMessage.data.length : 100);
+    i++
+  ) {
+    const userMessage = await octokit.request("GET /users/{username}", {
+      username: repoMessage.data[i].login,
+    });
+    
+    var company = userMessage.data.company;
+    var ss = {
+      name: repoMessage.data[i].login,
+      avatar_url: repoMessage.data[i].avatar_url,
+      contributions: repoMessage.data[i].contributions,
+    };
+
+    if (company ==  null){
+      company = "None";
+    }
+
+    if (resMap.has(company)){
+      var com = resMap.get(company);
+      com.count = com.count + 1;
+      com.employees.push(ss);
+      resMap.set(company, com);
+    }
+    else {
+      var com = {
+        name: company,
+        count: 1,
+        employees: [ss],
+      };
+      resMap.set(company, com);
+    }
+
+  }
+  console.log(resMap);
+
+  var arr = Array.from(resMap.values());
+  arr.sort(compareCompanies).reverse();
+  console.log(arr);
+  return arr;
+
+
+}
 
 const SearchRepoName = async (req, res) => {
   try {
