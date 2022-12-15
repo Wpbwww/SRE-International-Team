@@ -6,7 +6,7 @@ const ObjectId = require("mongodb").ObjectId;
 const { Octokit } = require("@octokit/core");
 const res = require("express/lib/response");
 const octokit = new Octokit({
-  auth: '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',
+  auth: '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',
 });
 const dayjs = require("dayjs");
 const GetMessage = async (req, res) => {
@@ -87,6 +87,49 @@ const SearchRepoName = async (req, res) => {
   } catch (err) {
     res.status(404).json(err);
   }
+};
+
+
+const GetReleases = async (owner, name) => {
+  console.log("aaa");
+  const repoMessage = await octokit.request(
+    "GET /repos/{owner}/{repo}/releases",
+    {
+      owner: owner,
+      repo: name,
+    }
+  );
+  let versionArr = [];
+
+  //console.log("bbb");
+  //console.log(repoMessage.data);
+  for (var release in repoMessage.data){
+      var tag = repoMessage.data[release].tag_name;
+      var name = repoMessage.data[release].name;
+      var start = repoMessage.data[release].published_at;
+      var sDate = dayjs(start);
+      //console.log("aaa");
+      var nextDate;
+      //console.log(release + 1);
+      if(parseInt(release) > 0){
+        nextDate = dayjs(repoMessage.data[parseInt(release) - 1].published_at);
+      }
+      else{
+        nextDate = dayjs(Date());
+      }
+
+      //console.log("ccc");
+      //console.log(test);
+      let rel = {"tag": tag, "name": name, "start": sDate, "end": nextDate};
+
+      //console.log(release);
+      //console.log(tag + " | " + name + " | " + start + " \n");
+      console.log(rel);
+      versionArr.push(rel);
+  }
+  //console.log("ccc");
+  //console.log(versionArr);
+  //return versionArr;
 };
 
 const GetDashboard = async (req, res) => {
@@ -442,11 +485,17 @@ const TimeSelection = async (req, res) => {
       owner: req.body.owner,
       repo: req.body.repoName,
     });
-    const where_Str = {owner:req.body.owner,name : req.body.repoName, uploader : req.body.uploader,}
-    
+    const where_Str = {_id: req.body.id}
+    console.log(req.body)
     const startTime=dayjs(req.body.startTime)
     const endTime=dayjs(req.body.endTime)
     const Update_Str = {
+      name: repoMessage.data.name,
+      owner: repoMessage.data.owner.login,
+      uploader: req.body.user,
+      forks: repoMessage.data.forks,
+      stars: repoMessage.data.watchers,
+      open_issues: repoMessage.data.open_issues,
       commit_frequency: await RepoGetCommitFrequency(
         {startTime,endTime},
         repoMessage.data.owner.login,
@@ -454,6 +503,27 @@ const TimeSelection = async (req, res) => {
       ),
       issue_frequency: await RepoGetIssueFrequency(
         {startTime,endTime},
+        repoMessage.data.owner.login,
+        repoMessage.data.name
+      ),
+      contributors: await RepoGetContributors(
+        repoMessage.data.owner.login,
+        repoMessage.data.name
+      ),
+      timeline: {
+        created_at: repoMessage.data.created_at,
+        updated_at: repoMessage.data.updated_at,
+        pushed_at: repoMessage.data.pushed_at,
+        recent_released_at: await RepoGetReleaseTime(
+          repoMessage.data.owner.login,
+          repoMessage.data.name
+        ),
+      },
+      language: await RepoGetLanguage(
+        repoMessage.data.owner.login,
+        repoMessage.data.name
+      ),
+      versions: await GetReleases(
         repoMessage.data.owner.login,
         repoMessage.data.name
       ),

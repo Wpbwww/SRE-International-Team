@@ -216,11 +216,12 @@ const AppProvider = ({ children }) => {
   const TimeSelection = async (repoInfo,startTime,endTime) => {
     dispatch({ type: TIMESELECTION_BEGIN });
     try {
-      const {owner,name,uploader}=repoInfo
+      const {owner,name,id}=repoInfo
+      console.log(repoInfo)
       await authFetch.post("/time", {
         owner:owner,
         repoName:name,
-        uploader:uploader,
+        id:id,
         startTime:startTime,
         endTime:endTime,
       });
