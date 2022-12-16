@@ -8,7 +8,7 @@ const { Octokit } = require("@octokit/core");
 
 const res = require("express/lib/response");
 const octokit = new Octokit({
-  auth: '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',//auth token
+  auth: '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',//auth token
 });
 const dayjs = require("dayjs");
 const GetMessage = async (req, res) => {
@@ -328,7 +328,6 @@ const findStartDesc = (Msg, time) => {
   var max = Msg.data.length - 1;
   while (min <= max) {
     var Next = Math.floor((max + min) / 2);
-    console.log(min, Next, Msg.data[Next].updated_at)
     if (dayjs(Msg.data[Next].updated_at).isSame(time)) {
       return Next;
     } else if (dayjs(Msg.data[Next].updated_at).isAfter(time)) {
