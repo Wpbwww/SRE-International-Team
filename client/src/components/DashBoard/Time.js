@@ -14,19 +14,19 @@ import ListItem from '@mui/material/ListItem';
 import { FixedSizeList } from 'react-window';
 
 const Time=(msg)=>{
-const [StartTime, setStartTime] = useState(dayjs(Date()).subtract(3,'year'));
-const [EndTime, setEndTime] = useState(dayjs(Date()));
-const [submit, setsubmit] = useState(false);
-const [releaseButtonClick, setIsReleaseButtonClick] = useState(false);
-const [Clicked, setClick] = useState(false);
-const [howSelectTime, sethowSelectTime] = useState("");
-const [IsTimeButton, setTimeButton] = useState(false);
+const [StartTime, setStartTime] = useState(dayjs(Date()).subtract(3,'year'));//开始时间
+const [EndTime, setEndTime] = useState(dayjs(Date()));//结束时间
+const [submit, setsubmit] = useState(false);//上传至后端的触发器
+const [releaseButtonClick, setIsReleaseButtonClick] = useState(false);//展开release version
+const [Clicked, setClick] = useState(false);//展开时间选着的日历
+const [howSelectTime, sethowSelectTime] = useState("");//选择时间的方式
+const [IsTimeButton, setTimeButton] = useState(false);//所按的按钮是开始时间还是结束时间
 useEffect(
   ()=>{
-    if(howSelectTime==="chooseTime"){
-      setIsReleaseButtonClick(false)
-    }else if(howSelectTime==="chooseVersion"){
-      setClick(false)
+    if(howSelectTime==="chooseTime"){//当决定直接选择时间时
+      setIsReleaseButtonClick(false)//把release version列表关闭
+    }else if(howSelectTime==="chooseVersion"){//当决定通过release version选择时间时
+      setClick(false)//把日历关闭
     }
   }
 ,[howSelectTime]
@@ -34,8 +34,7 @@ useEffect(
 useEffect(
   ()=>{
     if(submit===true){
-      console.log(StartTime,EndTime)
-      TimeSelection(msg.msg.repoInfo,StartTime,EndTime)
+      TimeSelection(msg.msg.repoInfo,StartTime,EndTime)//将数据传至后端
       setsubmit(false)
     }
   }
@@ -43,8 +42,8 @@ useEffect(
 )
 useEffect(
   ()=>{
-    if(msg.msg.time){
-      setStartTime(dayjs(msg.msg.time.startTime))
+    if(msg.msg.time){//页面刷新或者页面初始化后，当接收到数据库数据且不是undifined时
+      setStartTime(dayjs(msg.msg.time.startTime))//更新时间
       setEndTime(dayjs(msg.msg.time.endTime))
     }
   }
@@ -58,12 +57,12 @@ const exportTime = () => {
   setsubmit(!submit)
 };
 function TimeSelect(){
-  const TimeButtonClick=(event)=>{
+  const TimeButtonClick=(event)=>{//选择开始时间
     sethowSelectTime("chooseTime")
     setTimeButton(true);
     setClick(true);
   }
-  const EndButtonClick=(event)=>{
+  const EndButtonClick=(event)=>{//选择结束时间
     sethowSelectTime("chooseTime")
     setTimeButton(false);
     setClick(true);
@@ -72,7 +71,7 @@ function TimeSelect(){
     setClick(false);
   }
   const SelectStartTime=()=>{
-
+    //选择开始时间的日历
     return (
      <LocalizationProvider dateAdapter={AdapterDayjs}>
      <Typography>开始时间</Typography>
@@ -90,6 +89,7 @@ function TimeSelect(){
   );
   };
   const SelectEndTime =()=> {
+    //选择结束时间的日历
 
     return (
      <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -123,12 +123,12 @@ function TimeSelect(){
     </>
   );
 }
-const ReleaseVersion=()=>{
-  const SwitchTime=(start,end)=>{
+const ReleaseVersion=()=>{//版本
+  const SwitchTime=(start,end)=>{//根据版本数据内的时间更新时间
     setStartTime(dayjs(start))
     setEndTime(dayjs(end))
   }
-  const VersionPop=(Index)=>{
+  const VersionPop=(Index)=>{//根据index提取版本数据的相应数据
     var index=Index["Index"]
     if(msg.msg.versions[index]!==undefined){
       var version=msg.msg.versions
@@ -138,7 +138,7 @@ const ReleaseVersion=()=>{
     }
   }
   const ReleaseButton = ()=>{
-    function renderRow(props) {
+    function renderRow(props) {//列表
       const { index, style } = props;
       return (
         <ListItem style={style} key={index}>
