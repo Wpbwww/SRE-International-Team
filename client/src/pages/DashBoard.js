@@ -86,12 +86,6 @@ export default function DashboardApp() {
             <Grid item xs={12} sm={6} md={2.4}>
               <ActivityIndex {...{commit_frequency,issue_frequency,pull_frequency}}/>
             </Grid>
-            <Grid item xs={12} sm={6} md={8}>
-              <Language {...language} />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <PullRequest />
-            </Grid>
             <Grid item xs={12} sm={6} md={12}>
               <CommitFrequency {...commit_frequency} />
             </Grid>
@@ -100,6 +94,9 @@ export default function DashboardApp() {
             </Grid>
             <Grid item xs={12} sm={6} md={12}>
               <PullFrequency {...pull_frequency} />
+            </Grid>
+            <Grid item xs={12} sm={6} md={12}>
+              <Language {...language} />
             </Grid>
             <Grid item xs={12} sm={6} md={12}>
               <Contribute {...contribute} />
