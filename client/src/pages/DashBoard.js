@@ -84,7 +84,7 @@ export default function DashboardApp() {
               <ForkNumber total={forks} />
             </Grid>
             <Grid item xs={12} sm={6} md={2.4}>
-              <ActivityIndex />
+              <ActivityIndex {...{commit_frequency,issue_frequency,pull_frequency}}/>
             </Grid>
             <Grid item xs={12} sm={6} md={8}>
               <Language {...language} />

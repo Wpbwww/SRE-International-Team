@@ -30,13 +30,16 @@ const IconWrapperStyle = styled("div")(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-export default function ActivityIndex(){
+export default function ActivityIndex(frequency){
+  const IndexCount =()=>{
+    console.log(frequency)
+  }
   return (
     <RootStyle>
       <IconWrapperStyle>
         <Icon icon="gg:git-fork" width="24" height="24" />
       </IconWrapperStyle>
-      <Typography variant="h3">0</Typography>
+      <Typography variant="h3">{console.log(frequency)}</Typography>
       <Typography variant="subtitle2">Activity Index</Typography>
     </RootStyle>
   );

@@ -20,6 +20,7 @@ const [submit, setsubmit] = useState(false);
 const [releaseButtonClick, setIsReleaseButtonClick] = useState(false);
 const [Clicked, setClick] = useState(false);
 const [howSelectTime, sethowSelectTime] = useState("");
+const [IsTimeButton, setTimeButton] = useState(false);
 useEffect(
   ()=>{
     if(howSelectTime==="chooseTime"){
@@ -57,7 +58,6 @@ const exportTime = () => {
   setsubmit(!submit)
 };
 function TimeSelect(){
-  const [IsTimeButton, setTimeButton] = useState(false);
   const TimeButtonClick=(event)=>{
     sethowSelectTime("chooseTime")
     setTimeButton(true);
