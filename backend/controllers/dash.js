@@ -8,11 +8,7 @@ const { Octokit } = require("@octokit/core");
 
 const res = require("express/lib/response");
 const octokit = new Octokit({
-<<<<<<< Updated upstream
-  auth: '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',
-=======
-  auth: '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',
->>>>>>> Stashed changes
+  auth: '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',
 });
 const dayjs = require("dayjs");
 const GetMessage = async (req, res) => {
