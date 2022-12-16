@@ -29,14 +29,20 @@ const IconWrapperStyle = styled("div")(({ theme }) => ({
 
 const TOTAL = 234;
 
-export default function CommitNumber() {
+const CommitNumber = (total) => {
+  var num = 0;
+  for (var interval in total) {
+    num += total[interval];
+  }
+
   return (
     <RootStyle>
       <IconWrapperStyle>
         <Icon icon="bx:bx-git-commit" width={24} height={24} />
       </IconWrapperStyle>
-      <Typography variant="h3">{fShortenNumber(TOTAL)}</Typography>
-      <Typography variant="subtitle2">Commits</Typography>
+      <Typography variant="h3">{fShortenNumber(num)}</Typography>
+      <Typography variant="subtitle2">Commits in Interval</Typography>
     </RootStyle>
   );
-}
+};
+export default CommitNumber;

@@ -38,7 +38,7 @@ export default function AppNewUsers(total) {
         <Icon icon="gg:git-fork" width="24" height="24" />
       </IconWrapperStyle>
       <Typography variant="h3">{fShortenNumber(total.total)}</Typography>
-      <Typography variant="subtitle2">Fork Number</Typography>
+      <Typography variant="subtitle2">Total Forks</Typography>
     </RootStyle>
   );
 }

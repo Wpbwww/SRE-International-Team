@@ -72,10 +72,10 @@ export default function DashboardApp() {
               <Time msg={{repoInfo,versions,time}} />
             </Grid>
             <Grid item xs={12} sm={6} md={2.4}>
-              <CommitNumber />
+              <CommitNumber {...commit_frequency} />
             </Grid>
             <Grid item xs={12} sm={6} md={2.4}>
-              <IssueNumber total={open_issues} />
+              <IssueNumber {...issue_frequency} />
             </Grid>
             <Grid item xs={12} sm={6} md={2.4}>
               <StarNumber total={stars} />
