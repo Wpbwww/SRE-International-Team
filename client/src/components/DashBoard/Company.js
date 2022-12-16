@@ -170,7 +170,7 @@ const Company = (data) => {
     </Card>
 
     <Card style={{width: '50%' }}>
-    <CardHeader title="Companymsg" />
+    <CardHeader title="Company Employees (ranked by contribution)" />
       <CompanyMsgList/>
     </Card>
     </Grid>
