@@ -6,7 +6,6 @@ import StarNumber from "./StarNumber";
 import ForkNumber from "./ForkNumber";
 import ActivityIndex from "./ActivityIndex";
 import Language from "./Language";
-import PullRequest from "./PullRequest";
 import Contribute from "./Contribution";
 import CommitFrequency from "./CommitFrequency";
 import IssueFrequency from "./IssueFrequency";
@@ -23,7 +22,6 @@ export {
   ForkNumber,
   ActivityIndex,
   Language,
-  PullRequest,
   Contribute,
   CommitFrequency,
   IssueFrequency,

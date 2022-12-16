@@ -33,7 +33,7 @@ const CommitNumber = (total) => {
   var num = 0;
   for (var interval in total) {
     num += total[interval];
-  }
+  }//加总commit次数
 
   return (
     <RootStyle>

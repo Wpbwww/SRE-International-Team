@@ -172,17 +172,17 @@ const reducer = (state, action) => {
     return { ...state, search: "", searchStatus: "all", searchType: "all" };
   }
   if (action.type === TIMESELECTION_BEGIN) {
-    return { 
-      ...state, 
-      isLoading: true ,
-      refresh: true,
+    return {
+      ...state,
+      isLoading: true,//读取中
+      refresh: true,//需要更新
     };
   }
   if (action.type === TIMESELECTION_SUCCESS) {
     return {
       ...state,
       showAlert: true,
-      refresh: false,
+      refresh: false,//更新数据
       alertType: "success",
       alertText: "Time Selection successfully!",
     };
@@ -191,7 +191,7 @@ const reducer = (state, action) => {
     return {
       ...state,
       showAlert: true,
-      refresh: false,
+      refresh: false,//更新数据ÍÍ
       alertType: "error",
       alertText: action.payload.msg,
     };

@@ -8,7 +8,7 @@ import BaseOptionChart from "./BaseOptionChart";
 
 // ----------------------------------------------------------------------
 
-const PullFrequency = (data) => {
+const PullFrequency = (data) => {//将数据转换成图表格式
   var labels = [],
     number = [];
   for (var interval in data) {
@@ -17,12 +17,12 @@ const PullFrequency = (data) => {
   }
   const CHART_DATA = [
     {
-      name: "commit times",
+      name: "pull times",
       type: "area",
       data: number,
     },
   ];
-  const chartOptions = merge(BaseOptionChart(), {
+  const chartOptions = merge(BaseOptionChart(), {//图表格式
     stroke: { width: [3, 2] },
     plotOptions: { bar: { columnWidth: "11%", borderRadius: 4 } },
     fill: { type: ["gradient", "solid"] },
@@ -44,17 +44,17 @@ const PullFrequency = (data) => {
 
   return (
     <Grid container spacing={0}>
-    <Card style={{width:'100%'}}>
-      <CardHeader title="Pull Frequency" />
-      <Box sx={{ p: 3, pb: 1 }} dir="ltr">
-        <ReactApexChart
-          type="line"
-          series={CHART_DATA}
-          options={chartOptions}
-          height={355}
-        />
-      </Box>
-    </Card>
+      <Card style={{ width: '100%' }}>
+        <CardHeader title="Pull Frequency" />
+        <Box sx={{ p: 3, pb: 1 }} dir="ltr">
+          <ReactApexChart
+            type="line"
+            series={CHART_DATA}
+            options={chartOptions}
+            height={355}
+          />
+        </Box>
+      </Card>
 
     </Grid>
   );
