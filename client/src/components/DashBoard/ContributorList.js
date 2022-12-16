@@ -16,9 +16,6 @@ function Contributor({ contributor }) {
       />
       <Box sx={{ minWidth: 120 }}>
         <a href={url}>{name}</a>
-        {/* <Typography variant="body2" sx={{ color: "text.secondary" }} noWrap>
-          {description}
-        </Typography> */}
       </Box>
       <Stack direction="row" spacing={2} sx={{ minWidth: 480 }}>
         <Chip

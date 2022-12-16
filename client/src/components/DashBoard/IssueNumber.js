@@ -31,14 +31,20 @@ const IconWrapperStyle = styled("div")(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-export default function IssueNumber(total) {
+const IssueNumber = (total) => {
+  var num = 0;
+  for (var interval in total) {
+    num += total[interval];
+  }
+
   return (
     <RootStyle>
       <IconWrapperStyle>
         <Icon icon="whh:issue" width="24" height="24" />
       </IconWrapperStyle>
-      <Typography variant="h3">{fShortenNumber(total.total)}</Typography>
-      <Typography variant="subtitle2">Issue</Typography>
+      <Typography variant="h3">{fShortenNumber(num)}</Typography>
+      <Typography variant="subtitle2">Issues in Interval</Typography>
     </RootStyle>
   );
-}
+};
+export default IssueNumber;
