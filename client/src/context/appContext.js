@@ -213,17 +213,16 @@ const AppProvider = ({ children }) => {
   const clearFilters = () => {
     dispatch({ type: CLEAR_FILTERS });
   };
-  const TimeSelection = async (repoInfo,startTime,endTime) => {
+  const TimeSelection = async (repoInfo, startTime, endTime) => {
     dispatch({ type: TIMESELECTION_BEGIN });
     try {
-      const {owner,name,id}=repoInfo
-      console.log(repoInfo)
-      await authFetch.post("/time", {
-        owner:owner,
-        repoName:name,
-        id:id,
-        startTime:startTime,
-        endTime:endTime,
+      const { owner, name, id } = repoInfo
+      await authFetch.post("/time", {//传数据至后端Í
+        owner: owner,
+        repoName: name,
+        id: id,
+        startTime: startTime,
+        endTime: endTime,
       });
       dispatch({
         type: TIMESELECTION_SUCCESS,

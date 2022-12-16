@@ -9,53 +9,53 @@ const Repo = new mongoose.Schema({
         type: String,
         required: [true, 'must provide owner']
     },
-    uploader:{
-        type:String,
+    uploader: {
+        type: String,
         required: [true, 'must provide uploader']
     },
-    forks:{
+    forks: {
         type: Number,
         required: [true, 'must provide forks']
     },
-    stars:{
+    stars: {
         type: Number,
         required: [true, 'must provide stars']
     },
-    open_issues:{
+    open_issues: {
         type: Number,
         required: [true, 'must provide open_issues']
     },
-    commit_frequency:{
-        type:Object,
+    commit_frequency: {
+        type: Object,
         required: [true, 'must provide commit_frequency']
     },
-    issue_frequency:{
-        type:Object,
+    issue_frequency: {
+        type: Object,
         required: [true, 'must provide issue_frequency']
     },
-    pull_frequency:{
-        type:Object,
+    pull_frequency: {
+        type: Object,
         required: [true, 'must provide pull_frequency']
     },
-    contributors:{
-        type:[Object],
+    contributors: {
+        type: [Object],
         required: [true, 'must provide contributors'],
     },
-    timeline:{
-        type:Object
+    timeline: {
+        type: Object
     },
-    language:{
-        type:Object
+    language: {
+        type: Object
     },
 
-    company:{
-      type:[Object]
+    company: {
+        type: [Object]
     },
-    versions:{
-        type:[Object]
+    versions: {
+        type: [Object]
     },
-    time:{
-        type:Object
+    time: {
+        type: Object
     }
 })
 

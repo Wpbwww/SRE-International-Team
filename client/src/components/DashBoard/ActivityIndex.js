@@ -23,29 +23,28 @@ const IconWrapperStyle = styled("div")(({ theme }) => ({
   marginBottom: theme.spacing(3),
   color: "#5F8D4E",
   backgroundImage: `linear-gradient(135deg, ${alpha(
-  "#5F8D4E",
+    "#5F8D4E",
     0
   )} 0%, ${alpha("#A4BE7B", 0.24)} 100%)`,
 }));
 
 // ----------------------------------------------------------------------
 
-export default function ActivityIndex(data){
-  const IndexCount =()=>{
-    if(data.commit_frequency){
-      console.log(data)
-    var total=CountTotal(data.commit_frequency)+CountTotal(data.issue_frequency)+CountTotal(data.pull_frequency)
-    var timeLength=dayjs(data.time.endTime).diff(data.time.startTime,"day")
-    var frequency=total/timeLength
-    var index=((Math.sin(Math.atan(Math.log10(frequency)))+1))/2*100
-    return index.toFixed(2)
+export default function ActivityIndex(data) {
+  const IndexCount = () => {
+    if (data.commit_frequency) {
+      var total = CountTotal(data.commit_frequency) + CountTotal(data.issue_frequency) + CountTotal(data.pull_frequency)//加总commit、issue和pull次数
+      var timeLength = dayjs(data.time.endTime).diff(data.time.startTime, "day")//起始时间和结束时间的时间差
+      var frequency = total / timeLength//频率（每日）
+      var index = ((Math.sin(Math.atan(Math.log10(frequency))) + 1)) / 2 * 100//对频率取log后，取arctan再取sin、在稍微修饰下、使得定义域=[0,∞) 值域=[0,1)
+      return index.toFixed(2)//取两位小数
     }
   }
-  function CountTotal(data){
-    var array=Object.values(data)
-    var total=0;
-    for(var i=0;i<array.length;i++){
-      total+=array[i]
+  function CountTotal(data) {//加总
+    var array = Object.values(data)
+    var total = 0;
+    for (var i = 0; i < array.length; i++) {
+      total += array[i]
     }
     return total
   }

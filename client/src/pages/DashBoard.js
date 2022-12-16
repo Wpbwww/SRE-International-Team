@@ -12,7 +12,6 @@ import {
   ActivityIndex,
   TimeLine,
   Language,
-  PullRequest,
   Contribute,
   CommitFrequency,
   IssueFrequency,
@@ -24,14 +23,13 @@ export default function DashboardApp() {
   const { id } = useParams();
   const { isLoading, detail, getDashBoard ,refresh} = useAppContext();
   useEffect(() => {
-    if(!refresh)getDashBoard(id);
+    if(!refresh)getDashBoard(id);//当后端数据库更新后重新获取数据库数据
   }, [refresh]);
   const {
     name,
     owner,
     forks,
     stars,
-    open_issues,
     timeline,
     language,
     commit_frequency,

@@ -8,17 +8,17 @@ const { Octokit } = require("@octokit/core");
 
 const res = require("express/lib/response");
 const octokit = new Octokit({
-  auth: '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',
+  auth: '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',//auth token
 });
 const dayjs = require("dayjs");
 const GetMessage = async (req, res) => {
   try {
-    const repoMessage = await octokit.request("GET /repos/{owner}/{repo}", {
+    const repoMessage = await octokit.request("GET /repos/{owner}/{repo}", {//提取github数据
       owner: req.body.owner,
       repo: req.body.repoName,
     });
     console.log("auth token available")
-    const CreateRepo = await RepoSchema.create({
+    const CreateRepo = await RepoSchema.create({//将数据存入数据库中
       name: repoMessage.data.name,
       owner: repoMessage.data.owner.login,
       uploader: req.body.user,
@@ -26,17 +26,17 @@ const GetMessage = async (req, res) => {
       stars: repoMessage.data.watchers,
       open_issues: repoMessage.data.open_issues,
       commit_frequency: await RepoGetCommitFrequency(
-        {startTime: dayjs(Date()).subtract(1,'month'),endTime: dayjs(Date())},
+        { startTime: dayjs(Date()).subtract(1, 'month'), endTime: dayjs(Date()) },
         repoMessage.data.owner.login,
         repoMessage.data.name
       ),
       issue_frequency: await RepoGetIssueFrequency(
-        {startTime: dayjs(Date()).subtract(1,'month'),endTime: dayjs(Date())},
+        { startTime: dayjs(Date()).subtract(1, 'month'), endTime: dayjs(Date()) },
         repoMessage.data.owner.login,
         repoMessage.data.name
       ),
       pull_frequency: await RepoGetPullFrequency(
-        {startTime: dayjs(Date()).subtract(1,'month'),endTime: dayjs(Date())},
+        { startTime: dayjs(Date()).subtract(1, 'month'), endTime: dayjs(Date()) },
         repoMessage.data.owner.login,
         repoMessage.data.name
       ),
@@ -64,7 +64,7 @@ const GetMessage = async (req, res) => {
         repoMessage.data.owner.login,
         repoMessage.data.name
       ),
-      time: {startTime: dayjs(Date()).subtract(1,'month').toDate(),endTime: dayjs(Date()).toDate()},
+      time: { startTime: dayjs(Date()).subtract(1, 'month').toDate(), endTime: dayjs(Date()).toDate() },
 
     });
     res.status(201).json({ status: "success!" });
@@ -74,17 +74,17 @@ const GetMessage = async (req, res) => {
 };
 
 
-function compareCompanies( a, b ) {
-  if ( a.count < b.count ){
+function compareCompanies(a, b) {
+  if (a.count < b.count) {
     return -1;
   }
-  if ( a.count > b.count ){
+  if (a.count > b.count) {
     return 1;
   }
   return 0;
 }
 
-const RepoGetOrg = async(owner, name) => {
+const RepoGetOrg = async (owner, name) => {
   console.log("getting company info...");
   const repoMessage = await octokit.request(
     "GET /repos/{owner}/{repo}/contributors",
@@ -115,11 +115,11 @@ const RepoGetOrg = async(owner, name) => {
       contributions: repoMessage.data[i].contributions,
     };
 
-    if (company ==  null){
+    if (company == null) {
       company = "None";
     }
 
-    if (resMap.has(company)){
+    if (resMap.has(company)) {
       var com = resMap.get(company);
       com.count = com.count + 1;
       com.employees.push(ss);
@@ -184,21 +184,21 @@ const GetReleases = async (owner, name) => {
   );
   let versionArr = [];
 
-  for (var release in repoMessage.data){
-      var tag = repoMessage.data[release].tag_name;
-      var name = repoMessage.data[release].name;
-      var start = repoMessage.data[release].published_at;
-      var sDate = dayjs(start);
-      var nextDate;
-      if(parseInt(release) > 0){
-        nextDate = dayjs(repoMessage.data[parseInt(release) - 1].published_at);
-      }
-      else{
-        nextDate = dayjs(Date());
-      }
+  for (var release in repoMessage.data) {
+    var tag = repoMessage.data[release].tag_name;
+    var name = repoMessage.data[release].name;
+    var start = repoMessage.data[release].published_at;
+    var sDate = dayjs(start);
+    var nextDate;
+    if (parseInt(release) > 0) {
+      nextDate = dayjs(repoMessage.data[parseInt(release) - 1].published_at);
+    }
+    else {
+      nextDate = dayjs(Date());
+    }
 
-      let rel = {"tag": tag, "name": name, "start": sDate, "end": nextDate};
-      versionArr.push(rel);
+    let rel = { "tag": tag, "name": name, "start": sDate, "end": nextDate };
+    versionArr.push(rel);
   }
   return versionArr;
 };
@@ -257,7 +257,9 @@ const CountDayPull = (Msg) => {
 
 const RepoGetPullFrequency = async (time, owner, name) => {
   console.log("getting pull frequency...");
-  const {startTime, endTime} = time;
+  const { startTime, endTime } = time;
+  //开始时间、结束时间
+  //根据时间提取github数据
   const repoMessage = await octokit.request(
     "GET /repos/{owner}/{repo}/pulls",
     {
@@ -265,14 +267,15 @@ const RepoGetPullFrequency = async (time, owner, name) => {
       repo: name,
       per_page: 100,
       page: 1,
-      since: startTime.toDate(),
-      until: endTime.toDate()
+      sort: 'updated',
+      direction: 'desc',
     }
   );
 
   if (repoMessage.data.length == 0) return { 2021: "0", 2020: "0", 2019: "0" };
-  var i =2
-  while(true){
+  var i = 2
+  while (true) {
+    console.log(i)
     const NextRepoMessage = await octokit.request(
       "GET /repos/{owner}/{repo}/pulls",
       {
@@ -280,19 +283,26 @@ const RepoGetPullFrequency = async (time, owner, name) => {
         repo: name,
         per_page: 100,
         page: i,
-        since: startTime.toDate(),
-        until: endTime.toDate()
+        sort: 'updated',
+        direction: 'desc',
       }
     );
     i++;
     if (NextRepoMessage.data.length == 0) break;
     else {
-      if (dayjs(NextRepoMessage.data[0].updated_at).isAfter(endTime)||NextRepoMessage.data.length<100){
+      if (dayjs(NextRepoMessage.data[NextRepoMessage.data.length - 1].updated_at).isBefore(startTime) || NextRepoMessage.data.length < 100) {
         repoMessage.data = repoMessage.data.concat(NextRepoMessage.data);
         break;
       }
       repoMessage.data = repoMessage.data.concat(NextRepoMessage.data);
     }
+  }
+  try {
+    var startIndex = findStartDesc(repoMessage, endTime)
+    var endIndex = findEndDesc(repoMessage, startTime)
+    repoMessage.data = repoMessage.data.slice(startIndex, endIndex)//将超过结束时间的数据剔除
+  } catch (err) {
+    console.log("pull error time selection error")
   }
   const x1 = repoMessage.data[0].updated_at;
   const x2 =
@@ -313,9 +323,50 @@ const RepoGetPullFrequency = async (time, owner, name) => {
 
 }
 
-const RepoGetCommitFrequency = async (time,owner, name) => {
+const findStartDesc = (Msg, time) => {
+  var min = 0;
+  var max = Msg.data.length - 1;
+  while (min <= max) {
+    var Next = Math.floor((max + min) / 2);
+    console.log(min, Next, Msg.data[Next].updated_at)
+    if (dayjs(Msg.data[Next].updated_at).isSame(time)) {
+      return Next;
+    } else if (dayjs(Msg.data[Next].updated_at).isAfter(time)) {
+      min = Next + 1;
+    } else {
+      max = Next - 1;
+    }
+  }
+  if (min < 0) min = 0;
+  if (dayjs(Msg.data[min].updated_at).isAfter(time)) {
+    return min + 1
+  }
+  return min;
+}
+const findEndDesc = (Msg, time) => {
+  var min = 0;
+  var max = Msg.data.length - 1;
+  while (min <= max) {
+    var Next = Math.floor((max + min) / 2);
+    if (dayjs(Msg.data[Next].updated_at).isSame(time)) {
+      return Next + 1;
+    } else if (dayjs(Msg.data[Next].updated_at).isAfter(time)) {
+      min = Next + 1;
+    } else {
+      max = Next - 1;
+    }
+  }
+  if (min > Msg.data.length - 1) min = Msg.data.length - 1;
+  if (dayjs(Msg.data[min].updated_at).isBefore(time)) {
+    return min + 1
+  }
+  return min;
+}
+const RepoGetCommitFrequency = async (time, owner, name) => {
   console.log("getting commit frequency...");
-  const {startTime,endTime}=time
+  const { startTime, endTime } = time
+  //开始时间、结束时间
+  //根据时间提取github数据
   const repoMessage = await octokit.request(
     "GET /repos/{owner}/{repo}/commits",
     {
@@ -329,8 +380,8 @@ const RepoGetCommitFrequency = async (time,owner, name) => {
   );
 
   if (repoMessage.data.length == 0) return { 2021: "0", 2020: "0", 2019: "0" };
-  var i =2
-  while(true){
+  var i = 2
+  while (true) {
     const NextRepoMessage = await octokit.request(
       "GET /repos/{owner}/{repo}/commits",
       {
@@ -345,7 +396,7 @@ const RepoGetCommitFrequency = async (time,owner, name) => {
     i++;
     if (NextRepoMessage.data.length == 0) break;
     else {
-      if (dayjs(NextRepoMessage.data[0].commit.committer.date).isAfter(endTime)||NextRepoMessage.data.length<100){
+      if (dayjs(NextRepoMessage.data[0].commit.committer.date).isAfter(endTime) || NextRepoMessage.data.length < 100) {
         repoMessage.data = repoMessage.data.concat(NextRepoMessage.data);
         break;
       }
@@ -404,9 +455,11 @@ const CountDayCommit = (Msg) => {
   return answer;
 };
 
-const RepoGetIssueFrequency = async (time,owner, name) => {
+const RepoGetIssueFrequency = async (time, owner, name) => {
   console.log("getting issue frequency...");
-  const {startTime,endTime}=time
+  const { startTime, endTime } = time
+  //开始时间、结束时间
+  //根据时间提取github数据
   const repoMessage = await octokit.request(
     "GET /repos/{owner}/{repo}/issues",
     {
@@ -420,8 +473,8 @@ const RepoGetIssueFrequency = async (time,owner, name) => {
     }
   );
   if (repoMessage.data.length == 0) return { 2021: "0", 2020: "0", 2019: "0" };
-  var i=2
-  while(true) {
+  var i = 2
+  while (true) {
     const NextRepoMessage = await octokit.request(
       "GET /repos/{owner}/{repo}/issues",
       {
@@ -437,15 +490,16 @@ const RepoGetIssueFrequency = async (time,owner, name) => {
     i++;
     if (NextRepoMessage.data.length === 0) break;
     else {
-      if (dayjs(NextRepoMessage.data[0].updated_at).isAfter(endTime)||NextRepoMessage.data.length<100){
+      if (dayjs(NextRepoMessage.data[0].updated_at).isAfter(endTime) || NextRepoMessage.data.length < 100) {
+        //当提取到的数据中的第一条数据时间超过结束时间时停止提取数据
         repoMessage.data = repoMessage.data.concat(NextRepoMessage.data);
         break;
       }
       repoMessage.data = repoMessage.data.concat(NextRepoMessage.data);
     }
   }
-  var endIndex=findEnd(repoMessage,endTime)
-  repoMessage.data=repoMessage.data.slice(0,endIndex)
+  var endIndex = findEndAsc(repoMessage, endTime)
+  repoMessage.data = repoMessage.data.slice(0, endIndex)//将超过结束时间的数据剔除
   if (repoMessage.data.length == 0) return { 2021: "0", 2020: "0", 2019: "0" };
   const x1 = repoMessage.data[0].updated_at;
   const x2 = repoMessage.data[repoMessage.data.length - 1].updated_at;
@@ -463,22 +517,22 @@ const RepoGetIssueFrequency = async (time,owner, name) => {
   }
   return frequency;
 };
-const findEnd=(Msg,time)=>{
-  var min=0;
-  var max=Msg.data.length-1;
-  while(min<=max){
-    var Next =Math.floor((max+min)/2);
-    if(dayjs(Msg.data[Next].updated_at).isSame(time)){
-      return Next+1;
-    }else if(dayjs(Msg.data[Next].updated_at).isBefore(time)){
-      min=Next+1;
-    }else{
-      max=Next-1;
+const findEndAsc = (Msg, time) => {
+  var min = 0;
+  var max = Msg.data.length - 1;
+  while (min <= max) {
+    var Next = Math.floor((max + min) / 2);
+    if (dayjs(Msg.data[Next].updated_at).isSame(time)) {
+      return Next + 1;
+    } else if (dayjs(Msg.data[Next].updated_at).isBefore(time)) {
+      min = Next + 1;
+    } else {
+      max = Next - 1;
     }
   }
-  if(min>Msg.data.length-1)min=Msg.data.length-1;
-  if(dayjs(Msg.data[min].updated_at).isBefore(time)){
-    return min+1
+  if (min > Msg.data.length - 1) min = Msg.data.length - 1;
+  if (dayjs(Msg.data[min].updated_at).isBefore(time)) {
+    return min + 1
   }
   return min;
 }
@@ -687,9 +741,9 @@ const TimeSelection = async (req, res) => {
       repo: req.body.repoName,
     });
     console.log("auth token available")
-    const where_Str = {_id: req.body.id}
-    const startTime=dayjs(req.body.startTime)
-    const endTime=dayjs(req.body.endTime)
+    const where_Str = { _id: req.body.id }
+    const startTime = dayjs(req.body.startTime)
+    const endTime = dayjs(req.body.endTime)
     const Update_Str = {
       name: repoMessage.data.name,
       owner: repoMessage.data.owner.login,
@@ -698,17 +752,17 @@ const TimeSelection = async (req, res) => {
       stars: repoMessage.data.watchers,
       open_issues: repoMessage.data.open_issues,
       commit_frequency: await RepoGetCommitFrequency(
-        {startTime,endTime},
+        { startTime, endTime },
         repoMessage.data.owner.login,
         repoMessage.data.name
       ),
       issue_frequency: await RepoGetIssueFrequency(
-        {startTime,endTime},
+        { startTime, endTime },
         repoMessage.data.owner.login,
         repoMessage.data.name
       ),
       pull_frequency: await RepoGetPullFrequency(
-        {startTime,endTime},
+        { startTime, endTime },
         repoMessage.data.owner.login,
         repoMessage.data.name
       ),
@@ -734,10 +788,10 @@ const TimeSelection = async (req, res) => {
         repoMessage.data.owner.login,
         repoMessage.data.name
       ),
-      time: {startTime: startTime.toDate(),endTime: endTime.toDate()}
+      time: { startTime: startTime.toDate(), endTime: endTime.toDate() }
     }
-    const updateRepo = await RepoSchema.updateOne(where_Str,Update_Str);
-    res.status(201).json({ status: "success!" });
+    const updateRepo = await RepoSchema.updateOne(where_Str, Update_Str);
+    res.statÍus(201).json({ status: "success!" });
   } catch (err) {
     res.status(404).json(err);
   }
