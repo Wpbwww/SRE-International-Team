@@ -8,11 +8,10 @@ const { Octokit } = require("@octokit/core");
 
 const res = require("express/lib/response");
 const octokit = new Octokit({
-  auth: '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',
+  auth: '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',
 });
 const dayjs = require("dayjs");
 const GetMessage = async (req, res) => {
-  console.log("wow");
   try {
     const repoMessage = await octokit.request("GET /repos/{owner}/{repo}", {
       owner: req.body.owner,
@@ -86,6 +85,7 @@ function compareCompanies( a, b ) {
 }
 
 const RepoGetOrg = async(owner, name) => {
+  console.log("getting company info...");
   const repoMessage = await octokit.request(
     "GET /repos/{owner}/{repo}/contributors",
     {
@@ -135,11 +135,10 @@ const RepoGetOrg = async(owner, name) => {
     }
 
   }
-  console.log(resMap);
 
   var arr = Array.from(resMap.values());
   arr.sort(compareCompanies).reverse();
-  console.log(arr);
+
   return arr;
 
 
@@ -166,7 +165,7 @@ const SearchRepoName = async (req, res) => {
       };
       repos.push(eachRepo);
     }
-    console.log(repos);
+    //console.log(repos);
     return res.status(201).json({ repos });
   } catch (err) {
     res.status(404).json(err);
@@ -175,6 +174,7 @@ const SearchRepoName = async (req, res) => {
 
 
 const GetReleases = async (owner, name) => {
+  console.log("getting releases...");
   const repoMessage = await octokit.request(
     "GET /repos/{owner}/{repo}/releases",
     {
@@ -256,9 +256,8 @@ const CountDayPull = (Msg) => {
 };
 
 const RepoGetPullFrequency = async (time, owner, name) => {
+  console.log("getting pull frequency...");
   const {startTime, endTime} = time;
-  console.log("----");
-  console.log(time);
   const repoMessage = await octokit.request(
     "GET /repos/{owner}/{repo}/pulls",
     {
@@ -273,7 +272,6 @@ const RepoGetPullFrequency = async (time, owner, name) => {
 
   if (repoMessage.data.length == 0) return { 2021: "0", 2020: "0", 2019: "0" };
   var i =2
-  console.log("start of info loop");
   while(true){
     const NextRepoMessage = await octokit.request(
       "GET /repos/{owner}/{repo}/pulls",
@@ -289,7 +287,6 @@ const RepoGetPullFrequency = async (time, owner, name) => {
     i++;
     if (NextRepoMessage.data.length == 0) break;
     else {
-      console.log(NextRepoMessage.data[0].updated_at);
       if (dayjs(NextRepoMessage.data[0].updated_at).isAfter(endTime)||NextRepoMessage.data.length<100){
         repoMessage.data = repoMessage.data.concat(NextRepoMessage.data);
         break;
@@ -297,7 +294,6 @@ const RepoGetPullFrequency = async (time, owner, name) => {
       repoMessage.data = repoMessage.data.concat(NextRepoMessage.data);
     }
   }
-  console.log("end of info loop");
   const x1 = repoMessage.data[0].updated_at;
   const x2 =
     repoMessage.data[repoMessage.data.length - 1].updated_at;
@@ -318,6 +314,7 @@ const RepoGetPullFrequency = async (time, owner, name) => {
 }
 
 const RepoGetCommitFrequency = async (time,owner, name) => {
+  console.log("getting commit frequency...");
   const {startTime,endTime}=time
   const repoMessage = await octokit.request(
     "GET /repos/{owner}/{repo}/commits",
@@ -408,6 +405,7 @@ const CountDayCommit = (Msg) => {
 };
 
 const RepoGetIssueFrequency = async (time,owner, name) => {
+  console.log("getting issue frequency...");
   const {startTime,endTime}=time
   const repoMessage = await octokit.request(
     "GET /repos/{owner}/{repo}/issues",
@@ -625,6 +623,7 @@ const CountMonthIssue = (t1, t2, commitmsg) => {
 };
 
 const RepoGetContributors = async (owner, name) => {
+  console.log("getting contributors")
   const repoMessage = await octokit.request(
     "GET /repos/{owner}/{repo}/contributors",
     {
@@ -658,6 +657,7 @@ const RepoGetContributors = async (owner, name) => {
 };
 
 const RepoGetReleaseTime = async (owner, name) => {
+  console.log("getting release times...");
   const repoMessage = await octokit.request(
     "GET /repos/{owner}/{repo}/releases",
     {
@@ -670,6 +670,7 @@ const RepoGetReleaseTime = async (owner, name) => {
 };
 
 const RepoGetLanguage = async (owner, name) => {
+  console.log("getting languages...");
   const repoMessage = await octokit.request(
     "GET /repos/{owner}/{repo}/languages",
     {
