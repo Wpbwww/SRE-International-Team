@@ -623,7 +623,7 @@ const CountMonthIssue = (t1, t2, commitmsg) => {
 };
 
 const RepoGetContributors = async (owner, name) => {
-  console.log("getting contributors")
+  console.log("getting contributors...")
   const repoMessage = await octokit.request(
     "GET /repos/{owner}/{repo}/contributors",
     {
