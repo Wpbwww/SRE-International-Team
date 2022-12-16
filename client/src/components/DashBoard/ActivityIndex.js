@@ -1,7 +1,7 @@
 import { Icon } from "@iconify/react";
 import { alpha, styled } from "@mui/material/styles";
 import { Card, Typography } from "@mui/material";
-
+import dayjs from 'dayjs';
 // ----------------------------------------------------------------------
 
 const RootStyle = styled(Card)(({ theme }) => ({
@@ -30,16 +30,31 @@ const IconWrapperStyle = styled("div")(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-export default function ActivityIndex(frequency){
+export default function ActivityIndex(data){
   const IndexCount =()=>{
-    console.log(frequency)
+    if(data.commit_frequency){
+      console.log(data)
+    var total=CountTotal(data.commit_frequency)+CountTotal(data.issue_frequency)+CountTotal(data.pull_frequency)
+    var timeLength=dayjs(data.time.endTime).diff(data.time.startTime,"day")
+    var frequency=total/timeLength
+    var index=((Math.sin(Math.atan(Math.log10(frequency)))+1))/2*100
+    return index.toFixed(2)
+    }
+  }
+  function CountTotal(data){
+    var array=Object.values(data)
+    var total=0;
+    for(var i=0;i<array.length;i++){
+      total+=array[i]
+    }
+    return total
   }
   return (
     <RootStyle>
       <IconWrapperStyle>
         <Icon icon="gg:git-fork" width="24" height="24" />
       </IconWrapperStyle>
-      <Typography variant="h3">{console.log(frequency)}</Typography>
+      <Typography variant="h3">{IndexCount()}</Typography>
       <Typography variant="subtitle2">Activity Index</Typography>
     </RootStyle>
   );
